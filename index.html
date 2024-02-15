@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="index.js" defer></script>
+    <title>Multi Step Form</title>
+  </head>
+  <body>
+    <form id="form">
+      <div id="step1">
+        <div>
+          <label for="name">Name</label>
+          <input type="text" name="name" id="name" />
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input type="email" name="email" id="email" />
+        </div>
+      </div>
+      <div id="step2">
+        <fieldset>
+          <div>
+            <input
+              type="checkbox"
+              value="software_development"
+              name="interest"
+              id="software_development"
+            />
+            <label for="software_development">Software Development</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              value="user_experience"
+              name="interest"
+              id="user_experience"
+            />
+            <label for="user_experience">User Experience</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              value="graphic_design"
+              name="interest"
+              id="graphic_design"
+            />
+            <label for="graphic_design">Graphic Design</label>
+          </div>
+        </fieldset>
+      </div>
+      <div id="step3"></div>
+      <button id="submit">Submit</button>
+    </form>
+  </body>
+</html>
