@@ -1,38 +1,74 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("form");
-  // const button = document.getElementById("submit");
-  const formValues = {};
+class Form {
+  constructor({ initialValues = {}, fields, form, onSubmit }) {
+    this.values = { ...initialValues };
 
-  function bindInputById(id) {
-    // get by input name instead of id
-    const input = document.getElementById(id);
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      onSubmit(this.values);
+    });
 
-    input.addEventListener("input", (event) => {
-      formValues[id] = event.currentTarget.value;
+    fields.forEach((field) => {
+      if (field.type === "input") {
+        this._bindInputByName(field.name);
+      }
+
+      if (field.type === "checkbox") {
+        this._bindCheckboxByName(field.name);
+      }
     });
   }
 
-  bindInputById("name");
-  bindInputById("email");
+  _bindInputByName(fieldName) {
+    const selector = `input[name=${fieldName}]`;
+    const input = document.querySelector(selector);
 
-  formValues.interests = [];
-
-  const checkboxes = document.querySelectorAll(
-    "input[type=checkbox][name=interest]"
-  );
-
-  checkboxes.forEach((checkbox) => {
-    checkbox.addEventListener("change", (event) => {
-      const { value } = event.currentTarget;
-      const newSet = new Set(formValues.interests);
-      newSet.has(value) ? newSet.delete(value) : newSet.add(value);
-      formValues.interests = Array.from(newSet);
+    input.addEventListener("input", (event) => {
+      this.values[fieldName] = event.currentTarget.value;
     });
-  });
+  }
 
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    console.log(event);
-    console.log("formValues", formValues);
-  });
+  _bindCheckboxByName(fieldName) {
+    const selector = `input[type=checkbox][name=${fieldName}]`;
+    const checkboxes = document.querySelectorAll(selector);
+
+    checkboxes.forEach((checkbox) => {
+      checkbox.addEventListener("change", (event) => {
+        const { value } = event.currentTarget;
+        const newSet = new Set(this.values[fieldName]);
+        newSet.has(value) ? newSet.delete(value) : newSet.add(value);
+        this.values[fieldName] = Array.from(newSet);
+      });
+    });
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("form");
+
+  const initialValues = {
+    email: "",
+    interests: [],
+    name: "",
+  };
+
+  const fields = [
+    {
+      type: "input",
+      name: "name",
+    },
+    {
+      type: "input",
+      name: "email",
+    },
+    {
+      type: "checkbox",
+      name: "interests",
+    },
+  ];
+
+  const onSubmit = (values) => {
+    console.log("values", values);
+  };
+
+  const myForm = new Form({ initialValues, fields, form, onSubmit });
 });
