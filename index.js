@@ -1,13 +1,33 @@
+const validateEmail = (email) => {
+  return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+};
+
 class Form {
-  constructor({ initialValues = {}, fields, onSubmit }) {
+  constructor({ initialValues = {}, fields, onSubmit, validate }) {
     this.values = { ...initialValues };
     this.onSubmit = onSubmit;
     this.disabled = true;
     this.onChangeHandler = null;
-    this.validateHandler = null;
+    this.validateHandler = validate;
     this.errors = null;
+    this.visited = {};
+    this.hasError = {};
+    this.fields = fields;
 
-    fields.forEach((field) => {
+    this.init();
+  }
+
+  init() {
+    this.setFields();
+    this._handleErrors();
+  }
+
+  setFields() {
+    this.fields.forEach((field) => {
       if (field.type === "input") {
         this._bindInputByName(field.name);
       }
@@ -15,15 +35,14 @@ class Form {
       if (field.type === "checkbox") {
         this._bindCheckboxByName(field.name);
       }
+
+      this.visited[field.name] = false;
+      this.hasError[field.name] = false;
     });
   }
 
   onChange(func) {
     this.onChangeHandler = func;
-  }
-
-  validate(func) {
-    this.validateHandler = func;
   }
 
   handleSubmit() {
@@ -37,22 +56,34 @@ class Form {
   _handleValuesChange() {
     this.onChangeHandler && this.onChangeHandler();
     this._handleErrors();
-    this._setErrors();
   }
 
-  _setErrors() {
-    function insertAfter(referenceNode, newNode) {
-      referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-    }
-    const errorsFieldName = Object.keys(this.errors);
+  _setFieldError(fieldName, error) {
+    const selector = `input[name=${fieldName}]`;
+    const el = document.querySelector(selector);
 
-    errorsFieldName.forEach((name) => {
-      // insertAfter()
-      // const selector = `input[name=${name}]`;
-      // const el = document.querySelector(selector);
-      // const error = document.createTextNode("required");
-      // insertAfter(el, error);
-    });
+    const errorElement = document.getElementById(`${fieldName}-error`);
+
+    if (errorElement) {
+      errorElement.innerText = error;
+    } else {
+      el.insertAdjacentHTML(
+        "afterend",
+        `<div id="${fieldName}-error">${error}</div>`
+      );
+    }
+
+    this.hasError[fieldName] = true;
+  }
+
+  _deleteFieldError(fieldName) {
+    const selector = `input[name=${fieldName}]`;
+    const el = document.querySelector(selector);
+
+    if (el && el.nextSibling) {
+      el.parentNode.removeChild(el.nextSibling);
+      this.hasError[fieldName] = false;
+    }
   }
 
   _handleErrors() {
@@ -69,6 +100,20 @@ class Form {
     input.addEventListener("input", (event) => {
       this.values[fieldName] = event.currentTarget.value;
       this._handleValuesChange();
+    });
+
+    input.addEventListener("blur", (event) => {
+      this.visited[fieldName] = true;
+
+      console.log(this.errors);
+
+      if (this.errors[fieldName]) {
+        this._setFieldError(fieldName, this.errors[fieldName]);
+      }
+
+      if (this.hasError[fieldName] && !this.errors[fieldName]) {
+        this._deleteFieldError(fieldName);
+      }
     });
   }
 
@@ -124,10 +169,24 @@ document.addEventListener("DOMContentLoaded", () => {
       errors.name = "required";
     }
 
+    // if name is missing
+    if (!values.email) {
+      errors.email = "required";
+    }
+
+    if (values.email && !validateEmail(values.email)) {
+      errors.email = "wrong email format";
+    }
+
     return errors;
   };
 
-  const myForm = new Form({ initialValues, fields, onSubmit });
+  const myForm = new Form({
+    initialValues,
+    fields,
+    onSubmit,
+    validate: validateHandler,
+  });
 
   const submitButton = document.getElementById("submit");
 
@@ -144,6 +203,4 @@ document.addEventListener("DOMContentLoaded", () => {
       submitButton.removeAttribute("disabled");
     }
   });
-
-  myForm.validate(validateHandler);
 });
