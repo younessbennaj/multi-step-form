@@ -10,7 +10,7 @@ class Form {
   constructor({ initialValues = {}, fields, onSubmit, validate }) {
     this.values = { ...initialValues };
     this.onSubmit = onSubmit;
-    this.disabled = true;
+    this.hasValidationError = true;
     this.onChangeHandler = null;
     this.validateHandler = validate;
     this.errors = null;
@@ -24,6 +24,7 @@ class Form {
   init() {
     this.setFields();
     this._handleErrors();
+    this._setHasValidationError();
   }
 
   setFields() {
@@ -54,8 +55,9 @@ class Form {
   }
 
   _handleValuesChange() {
-    this.onChangeHandler && this.onChangeHandler();
     this._handleErrors();
+    this._setHasValidationError();
+    this.onChangeHandler && this.onChangeHandler();
   }
 
   _setFieldError(fieldName, error) {
@@ -93,6 +95,10 @@ class Form {
     }
   }
 
+  _setHasValidationError() {
+    this.hasValidationError = Boolean(Object.keys(this.errors).length);
+  }
+
   _bindInputByName(fieldName) {
     const selector = `input[name=${fieldName}]`;
     const input = document.querySelector(selector);
@@ -103,9 +109,8 @@ class Form {
     });
 
     input.addEventListener("blur", (event) => {
+      this._handleValuesChange();
       this.visited[fieldName] = true;
-
-      console.log(this.errors);
 
       if (this.errors[fieldName]) {
         this._setFieldError(fieldName, this.errors[fieldName]);
@@ -142,6 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
     name: "",
   };
 
+  // merge with initialValues
   const fields = [
     {
       type: "input",
@@ -164,12 +170,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const validateHandler = (values) => {
     const errors = {};
 
-    // if name is missing
     if (!values.name) {
       errors.name = "required";
     }
 
-    // if name is missing
     if (!values.email) {
       errors.email = "required";
     }
@@ -197,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   myForm.onChange(function () {
-    if (this.disabled) {
+    if (this.hasValidationError) {
       submitButton.setAttribute("disabled", "true");
     } else {
       submitButton.removeAttribute("disabled");
