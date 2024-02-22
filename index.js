@@ -50,42 +50,43 @@ class Form {
     this.onSubmit(this.values);
   }
 
+  handleBlur(fieldName) {
+    this._handleValuesChange();
+    this.visited[fieldName] = true;
+    this._handleFieldError(fieldName);
+  }
+
+  _handleFieldError(fieldName) {
+    if (this.errors[fieldName]) {
+      this._setFieldError(fieldName, this.errors[fieldName]);
+    }
+
+    if (this.hasError[fieldName] && !this.errors[fieldName]) {
+      this._deleteFieldError(fieldName);
+    }
+  }
+
   _toggleDisabled() {
     this.disabled = !Boolean(this.disabled);
   }
 
-  _handleValuesChange() {
+  _handleValuesChange(fieldName) {
     this._handleErrors();
     this._setHasValidationError();
+    this.visited[fieldName] && this._handleFieldError(fieldName);
     this.onChangeHandler && this.onChangeHandler();
   }
 
   _setFieldError(fieldName, error) {
-    const selector = `input[name=${fieldName}]`;
-    const el = document.querySelector(selector);
-
     const errorElement = document.getElementById(`${fieldName}-error`);
-
-    if (errorElement) {
-      errorElement.innerText = error;
-    } else {
-      el.insertAdjacentHTML(
-        "afterend",
-        `<div id="${fieldName}-error">${error}</div>`
-      );
-    }
-
+    errorElement.innerText = error;
     this.hasError[fieldName] = true;
   }
 
   _deleteFieldError(fieldName) {
-    const selector = `input[name=${fieldName}]`;
-    const el = document.querySelector(selector);
-
-    if (el && el.nextSibling) {
-      el.parentNode.removeChild(el.nextSibling);
-      this.hasError[fieldName] = false;
-    }
+    const errorElement = document.getElementById(`${fieldName}-error`);
+    errorElement.innerText = null;
+    this.hasError[fieldName] = false;
   }
 
   _handleErrors() {
@@ -105,20 +106,11 @@ class Form {
 
     input.addEventListener("input", (event) => {
       this.values[fieldName] = event.currentTarget.value;
-      this._handleValuesChange();
+      this._handleValuesChange(fieldName);
     });
 
-    input.addEventListener("blur", (event) => {
-      this._handleValuesChange();
-      this.visited[fieldName] = true;
-
-      if (this.errors[fieldName]) {
-        this._setFieldError(fieldName, this.errors[fieldName]);
-      }
-
-      if (this.hasError[fieldName] && !this.errors[fieldName]) {
-        this._deleteFieldError(fieldName);
-      }
+    input.addEventListener("blur", () => {
+      this.handleBlur(fieldName);
     });
   }
 
@@ -132,9 +124,13 @@ class Form {
         const newSet = new Set(this.values[fieldName]);
         newSet.has(value) ? newSet.delete(value) : newSet.add(value);
         this.values[fieldName] = Array.from(newSet);
+        this._handleValuesChange(fieldName);
+      });
+    });
 
-        // UTILS
-        this._handleValuesChange();
+    checkboxes.forEach((checkbox) => {
+      checkbox.addEventListener("blur", () => {
+        this.handleBlur(fieldName);
       });
     });
   }
@@ -167,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("values", values);
   };
 
-  const validateHandler = (values) => {
+  const validate = (values) => {
     const errors = {};
 
     if (!values.name) {
@@ -182,6 +178,10 @@ document.addEventListener("DOMContentLoaded", () => {
       errors.email = "wrong email format";
     }
 
+    if (!values.interests || values.interests.length === 0) {
+      errors.interests = "select at least 1 element";
+    }
+
     return errors;
   };
 
@@ -189,12 +189,10 @@ document.addEventListener("DOMContentLoaded", () => {
     initialValues,
     fields,
     onSubmit,
-    validate: validateHandler,
+    validate,
   });
 
   const submitButton = document.getElementById("submit");
-
-  submitButton.setAttribute("disabled", "true");
 
   submitButton.addEventListener("click", () => {
     myForm.handleSubmit();
