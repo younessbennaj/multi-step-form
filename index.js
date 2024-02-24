@@ -7,7 +7,7 @@ const validateEmail = (email) => {
 };
 
 class Form {
-  constructor({ initialValues = {}, fields, onSubmit, validate }) {
+  constructor({ initialValues = {}, fields, onSubmit, validate, onInit }) {
     this.values = { ...initialValues };
     this.onSubmit = onSubmit;
     this.hasValidationError = true;
@@ -17,6 +17,7 @@ class Form {
     this.visited = {};
     this.hasError = {};
     this.fields = fields;
+    this.onInit = onInit;
 
     this.init();
   }
@@ -25,6 +26,7 @@ class Form {
     this.setFields();
     this._handleErrors();
     this._setHasValidationError();
+    this.onInit();
   }
 
   setFields() {
@@ -80,12 +82,14 @@ class Form {
   _setFieldError(fieldName, error) {
     const errorElement = document.getElementById(`${fieldName}-error`);
     errorElement.innerText = error;
+    errorElement.classList.add("visible");
     this.hasError[fieldName] = true;
   }
 
   _deleteFieldError(fieldName) {
     const errorElement = document.getElementById(`${fieldName}-error`);
     errorElement.innerText = null;
+    errorElement.classList.remove("visible");
     this.hasError[fieldName] = false;
   }
 
@@ -129,7 +133,10 @@ class Form {
     });
 
     checkboxes.forEach((checkbox) => {
-      checkbox.addEventListener("blur", () => {
+      const labelSelector = "label[for='" + checkbox.attributes.id.value + "']";
+      const label = document.querySelector(labelSelector);
+
+      label.addEventListener("mouseup", (event) => {
         this.handleBlur(fieldName);
       });
     });
@@ -137,6 +144,8 @@ class Form {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  const submitButton = document.getElementById("submit");
+
   const initialValues = {
     email: "",
     interests: [],
@@ -185,14 +194,19 @@ document.addEventListener("DOMContentLoaded", () => {
     return errors;
   };
 
+  function onInit() {
+    if (this.hasValidationError) {
+      submitButton.setAttribute("disabled", "true");
+    }
+  }
+
   const myForm = new Form({
     initialValues,
     fields,
     onSubmit,
     validate,
+    onInit,
   });
-
-  const submitButton = document.getElementById("submit");
 
   submitButton.addEventListener("click", () => {
     myForm.handleSubmit();

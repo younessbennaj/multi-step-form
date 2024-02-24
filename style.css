@@ -1,0 +1,62 @@
+body {
+  font-family: "Inter", sans-serif;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  margin-bottom: 24px;
+}
+
+.field-error {
+  font-size: 14px;
+  color: red;
+  display: none;
+}
+
+.field-error.visible {
+  display: block;
+}
+
+.submit-button {
+  height: 42px;
+  padding: 0px 32px;
+  border-radius: 21px;
+  border: none;
+  background-color: #9333ea;
+  color: white;
+  cursor: pointer;
+}
+
+.input-field {
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.checkbox-field label {
+  display: flex;
+  align-items: center;
+  padding: 16px 16px;
+  border: 1px solid black;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.checkbox-field input[type="checkbox"]:checked + label {
+  border: 1px solid #9333ea;
+  background-color: #9333ea;
+  color: white;
+}
+
+.checkbox-field label:hover {
+  border: 1px solid #9333ea;
+  color: #9333ea;
+}
