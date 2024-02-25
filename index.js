@@ -19,24 +19,24 @@ class Form {
     this.fields = fields;
     this.onInit = onInit;
 
-    this.init();
+    this.#_init();
   }
 
-  init() {
-    this.setFields();
-    this._handleErrors();
-    this._setHasValidationError();
+  #_init() {
+    this.#_setFields();
+    this.#_handleErrors();
+    this.#_setHasValidationError();
     this.onInit();
   }
 
-  setFields() {
+  #_setFields() {
     this.fields.forEach((field) => {
       if (field.type === "input") {
-        this._bindInputByName(field.name);
+        this.#_bindInputByName(field.name);
       }
 
       if (field.type === "checkbox") {
-        this._bindCheckboxByName(field.name);
+        this.#_bindCheckboxByName(field.name);
       }
 
       this.visited[field.name] = false;
@@ -52,73 +52,69 @@ class Form {
     this.onSubmit(this.values);
   }
 
-  handleBlur(fieldName) {
-    this._handleValuesChange();
+  #_handleBlur(fieldName) {
+    this.#_handleValuesChange();
     this.visited[fieldName] = true;
-    this._handleFieldError(fieldName);
+    this.#_handleFieldError(fieldName);
   }
 
-  _handleFieldError(fieldName) {
+  #_handleFieldError(fieldName) {
     if (this.errors[fieldName]) {
-      this._setFieldError(fieldName, this.errors[fieldName]);
+      this.#_setFieldError(fieldName, this.errors[fieldName]);
     }
 
     if (this.hasError[fieldName] && !this.errors[fieldName]) {
-      this._deleteFieldError(fieldName);
+      this.#_deleteFieldError(fieldName);
     }
   }
 
-  _toggleDisabled() {
-    this.disabled = !Boolean(this.disabled);
-  }
-
-  _handleValuesChange(fieldName) {
-    this._handleErrors();
-    this._setHasValidationError();
-    this.visited[fieldName] && this._handleFieldError(fieldName);
+  #_handleValuesChange(fieldName) {
+    this.#_handleErrors();
+    this.#_setHasValidationError();
+    this.visited[fieldName] && this.#_handleFieldError(fieldName);
     this.onChangeHandler && this.onChangeHandler();
   }
 
-  _setFieldError(fieldName, error) {
+  #_setFieldError(fieldName, error) {
     const errorElement = document.getElementById(`${fieldName}-error`);
     errorElement.innerText = error;
     errorElement.classList.add("visible");
     this.hasError[fieldName] = true;
   }
 
-  _deleteFieldError(fieldName) {
+  #_deleteFieldError(fieldName) {
     const errorElement = document.getElementById(`${fieldName}-error`);
     errorElement.innerText = null;
     errorElement.classList.remove("visible");
     this.hasError[fieldName] = false;
   }
-
-  _handleErrors() {
+  // replace with private syntax
+  #_handleErrors() {
     if (this.validateHandler) {
       const errors = this.validateHandler(this.values);
       this.errors = errors;
     }
   }
 
-  _setHasValidationError() {
+  #_setHasValidationError() {
     this.hasValidationError = Boolean(Object.keys(this.errors).length);
   }
 
-  _bindInputByName(fieldName) {
+  #_bindInputByName(fieldName) {
     const selector = `input[name=${fieldName}]`;
     const input = document.querySelector(selector);
 
     input.addEventListener("input", (event) => {
       this.values[fieldName] = event.currentTarget.value;
-      this._handleValuesChange(fieldName);
+      this.#_handleValuesChange(fieldName);
     });
 
     input.addEventListener("blur", () => {
-      this.handleBlur(fieldName);
+      this.#_handleBlur(fieldName);
     });
   }
 
-  _bindCheckboxByName(fieldName) {
+  #_bindCheckboxByName(fieldName) {
     const selector = `input[type=checkbox][name=${fieldName}]`;
     const checkboxes = document.querySelectorAll(selector);
 
@@ -128,7 +124,7 @@ class Form {
         const newSet = new Set(this.values[fieldName]);
         newSet.has(value) ? newSet.delete(value) : newSet.add(value);
         this.values[fieldName] = Array.from(newSet);
-        this._handleValuesChange(fieldName);
+        this.#_handleValuesChange(fieldName);
       });
     });
 
@@ -137,86 +133,102 @@ class Form {
       const label = document.querySelector(labelSelector);
 
       label.addEventListener("mouseup", (event) => {
-        this.handleBlur(fieldName);
+        this.#_handleBlur(fieldName);
       });
     });
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const submitButton = document.getElementById("submit");
+const submitButton = document.getElementById("submit");
 
-  const initialValues = {
-    email: "",
-    interests: [],
-    name: "",
-  };
+const initialValues = {
+  email: "",
+  interests: [],
+  name: "",
+};
 
-  // merge with initialValues
-  const fields = [
-    {
-      type: "input",
-      name: "name",
-    },
-    {
-      type: "input",
-      name: "email",
-    },
-    {
-      type: "checkbox",
-      name: "interests",
-    },
-  ];
+// merge with initialValues
+const fields = [
+  {
+    type: "input",
+    name: "name",
+  },
+  {
+    type: "input",
+    name: "email",
+  },
+  {
+    type: "checkbox",
+    name: "interests",
+  },
+];
 
-  const onSubmit = (values) => {
-    console.log("values", values);
-  };
+const onSubmit = (values) => {
+  console.log("values", values);
+};
 
-  const validate = (values) => {
-    const errors = {};
+const validate = (values) => {
+  const errors = {};
 
-    if (!values.name) {
-      errors.name = "required";
-    }
-
-    if (!values.email) {
-      errors.email = "required";
-    }
-
-    if (values.email && !validateEmail(values.email)) {
-      errors.email = "wrong email format";
-    }
-
-    if (!values.interests || values.interests.length === 0) {
-      errors.interests = "select at least 1 element";
-    }
-
-    return errors;
-  };
-
-  function onInit() {
-    if (this.hasValidationError) {
-      submitButton.setAttribute("disabled", "true");
-    }
+  if (!values.name) {
+    errors.name = "required";
   }
 
-  const myForm = new Form({
-    initialValues,
-    fields,
-    onSubmit,
-    validate,
-    onInit,
-  });
+  if (!values.email) {
+    errors.email = "required";
+  }
 
-  submitButton.addEventListener("click", () => {
+  if (values.email && !validateEmail(values.email)) {
+    errors.email = "wrong email format";
+  }
+
+  if (!values.interests || values.interests.length === 0) {
+    errors.interests = "select at least 1 element";
+  }
+
+  return errors;
+};
+
+function onInit() {
+  // if (this.hasValidationError) {
+  //   submitButton.setAttribute("disabled", "true");
+  // }
+}
+
+const myForm = new Form({
+  initialValues,
+  fields,
+  onSubmit,
+  validate,
+  onInit,
+});
+
+myForm.onChange(function () {
+  // if (this.hasValidationError) {
+  //   submitButton.setAttribute("disabled", "true");
+  // } else {
+  //   submitButton.removeAttribute("disabled");
+  // }
+});
+
+let currentIndex = 0;
+
+const steps = ["personal-information", "topics", "resume"];
+
+function displayCurrentStep() {
+  steps.forEach((selector, index) => {
+    const displayProperty = currentIndex === index ? "block" : "none";
+    document.getElementById(selector).style.display = displayProperty;
+  });
+}
+
+displayCurrentStep();
+
+submitButton.addEventListener("click", () => {
+  if (currentIndex < steps.length - 1) {
+    currentIndex++;
+    displayCurrentStep();
+  } else {
     myForm.handleSubmit();
-  });
-
-  myForm.onChange(function () {
-    if (this.hasValidationError) {
-      submitButton.setAttribute("disabled", "true");
-    } else {
-      submitButton.removeAttribute("disabled");
-    }
-  });
+  }
 });

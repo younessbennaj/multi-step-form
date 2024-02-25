@@ -29,6 +29,10 @@ body {
   cursor: pointer;
 }
 
+.step {
+  display: none;
+}
+
 .input-field {
   padding: 16px;
   border-radius: 8px;
@@ -59,4 +63,9 @@ body {
 .checkbox-field label:hover {
   border: 1px solid #9333ea;
   color: #9333ea;
+}
+
+.step-title {
+  font-size: 18px;
+  margin-bottom: 24px;
 }

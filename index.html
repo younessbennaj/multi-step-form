@@ -15,7 +15,8 @@
   </head>
   <body>
     <form id="form">
-      <div id="step1">
+      <div class="step" id="personal-information">
+        <div class="step-title">Register</div>
         <div class="field-group">
           <label for="name">Name</label>
           <input class="input-field" type="text" name="name" id="name" />
@@ -27,7 +28,8 @@
           <div class="field-error" id="email-error"></div>
         </div>
       </div>
-      <div id="step2">
+      <div class="step" id="topics">
+        <div class="step-title">Which topics you are interested in?</div>
         <div class="checkbox-group">
           <div class="checkbox-field">
             <input
@@ -62,7 +64,9 @@
           <div class="field-error" id="interests-error"></div>
         </div>
       </div>
-      <div id="step3"></div>
+      <div id="resume" class="step">
+        <p>un test</p>
+      </div>
     </form>
 
     <button class="submit-button" id="submit">Continue</button>
