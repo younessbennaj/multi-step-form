@@ -14,61 +14,64 @@
     <title>Multi Step Form</title>
   </head>
   <body>
-    <form id="form">
-      <div class="step" id="personal-information">
-        <div class="step-title">Register</div>
-        <div class="field-group">
-          <label for="name">Name</label>
-          <input class="input-field" type="text" name="name" id="name" />
-          <div class="field-error" id="name-error"></div>
-        </div>
-        <div class="field-group">
-          <label for="email">Email</label>
-          <input class="input-field" type="email" name="email" id="email" />
-          <div class="field-error" id="email-error"></div>
-        </div>
-      </div>
-      <div class="step" id="topics">
-        <div class="step-title">Which topics you are interested in?</div>
-        <div class="checkbox-group">
-          <div class="checkbox-field">
-            <input
-              type="checkbox"
-              value="software_development"
-              name="interests"
-              id="software_development"
-              hidden
-            />
-            <label for="software_development">Software Development</label>
+    <div class="container">
+      <form id="form">
+        <div class="step" id="personal-information">
+          <div class="step-title">Register</div>
+          <div class="field-group">
+            <label class="field-label" for="name">Name</label>
+            <input class="input-field" type="text" name="name" id="name" />
+            <div class="field-error" id="name-error"></div>
           </div>
-          <div class="checkbox-field">
-            <input
-              type="checkbox"
-              value="user_experience"
-              name="interests"
-              id="user_experience"
-              hidden
-            />
-            <label for="user_experience">User Experience</label>
+          <div class="field-group">
+            <label class="field-label" for="email">Email</label>
+            <input class="input-field" type="email" name="email" id="email" />
+            <div class="field-error" id="email-error"></div>
           </div>
-          <div class="checkbox-field">
-            <input
-              type="checkbox"
-              value="graphic_design"
-              name="interests"
-              id="graphic_design"
-              hidden
-            />
-            <label for="graphic_design">Graphic Design</label>
-          </div>
-          <div class="field-error" id="interests-error"></div>
         </div>
+        <div class="step" id="topics">
+          <div class="step-title">Which topics you are interested in?</div>
+          <div class="checkbox-group">
+            <div class="checkbox-field">
+              <input
+                type="checkbox"
+                value="software_development"
+                name="interests"
+                id="software_development"
+                hidden
+              />
+              <label for="software_development">Software Development</label>
+            </div>
+            <div class="checkbox-field">
+              <input
+                type="checkbox"
+                value="user_experience"
+                name="interests"
+                id="user_experience"
+                hidden
+              />
+              <label for="user_experience">User Experience</label>
+            </div>
+            <div class="checkbox-field">
+              <input
+                type="checkbox"
+                value="graphic_design"
+                name="interests"
+                id="graphic_design"
+                hidden
+              />
+              <label for="graphic_design">Graphic Design</label>
+            </div>
+            <div class="field-error" id="interests-error"></div>
+          </div>
+        </div>
+        <div id="resume" class="step">
+          <p>un test</p>
+        </div>
+      </form>
+      <div class="button-group">
+        <button class="submit-button" id="submit">Continue</button>
       </div>
-      <div id="resume" class="step">
-        <p>un test</p>
-      </div>
-    </form>
-
-    <button class="submit-button" id="submit">Continue</button>
+    </div>
   </body>
 </html>

@@ -1,5 +1,47 @@
+:root {
+  --white: #e5e7eb;
+  --dark: #121826;
+  --dark-grey: #212936;
+  --grey: #394150;
+  --medium-grey: #4d5562;
+  --light-grey: #a1a1a9;
+  --purple: #652cd1;
+  --light-purple: #652cd1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: "Inter", sans-serif;
+  color: var(--white);
+  padding: 8px;
+  margin: 0;
+  background-color: var(--dark);
+}
+
+.container {
+  margin-top: 96px;
+  background-color: var(--dark-grey);
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid var(--medium-grey);
+}
+
+.input-field {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--dark-grey);
+}
+
+.input-field:focus {
+  border: 1px solid var(--purple);
+}
+
+.input-field:focus-visible {
+  border: 1px solid var(--purple);
+  outline: none;
 }
 
 .field-group {
@@ -9,14 +51,24 @@ body {
   margin-bottom: 24px;
 }
 
+.field-label {
+  font-size: 12px;
+  color: var(--light-grey);
+}
+
 .field-error {
-  font-size: 14px;
-  color: red;
+  font-size: 12px;
+  color: #ef4444;
   display: none;
 }
 
 .field-error.visible {
   display: block;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
 }
 
 .submit-button {
@@ -25,17 +77,13 @@ body {
   border-radius: 21px;
   border: none;
   background-color: #9333ea;
-  color: white;
+  color: var(--white);
   cursor: pointer;
+  background: linear-gradient(var(--purple), var(--light-purple));
 }
 
 .step {
   display: none;
-}
-
-.input-field {
-  padding: 16px;
-  border-radius: 8px;
 }
 
 .checkbox-group {
@@ -46,23 +94,29 @@ body {
 }
 
 .checkbox-field label {
+  color: var(--light-grey);
   display: flex;
   align-items: center;
   padding: 16px 16px;
-  border: 1px solid black;
+  border: 1px solid var(--medium-grey);
   border-radius: 8px;
   cursor: pointer;
+  background-color: var(--grey);
 }
 
 .checkbox-field input[type="checkbox"]:checked + label {
-  border: 1px solid #9333ea;
-  background-color: #9333ea;
+  border: 1px solid var(--light-purple);
+  background-color: var(--purple);
   color: white;
 }
 
 .checkbox-field label:hover {
-  border: 1px solid #9333ea;
-  color: #9333ea;
+  border: 1px solid var(--light-purple);
+}
+
+.checkbox-field label:focus-visible {
+  outline: none;
+  border: none;
 }
 
 .step-title {
