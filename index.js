@@ -18,6 +18,7 @@ class Form {
     this.hasError = {};
     this.fields = fields;
     this.onInit = onInit;
+    this.currentStep = 0;
 
     this.#_init();
   }
@@ -50,6 +51,13 @@ class Form {
 
   handleSubmit() {
     this.onSubmit(this.values);
+  }
+
+  nextStep() {
+    this.currentStep++;
+    this.#_handleErrors();
+    this.#_setHasValidationError();
+    this.onChangeHandler && this.onChangeHandler();
   }
 
   #_handleBlur(fieldName) {
@@ -167,32 +175,39 @@ const onSubmit = (values) => {
   console.log("values", values);
 };
 
-const validate = (values) => {
+const validate = function (values) {
   const errors = {};
 
-  if (!values.name) {
-    errors.name = "required";
+  console.log("currentStep", this.currentStep);
+
+  if (this.currentStep === 0) {
+    if (!values.name) {
+      errors.name = "required";
+    }
+
+    if (!values.email) {
+      errors.email = "required";
+    }
+
+    if (values.email && !validateEmail(values.email)) {
+      errors.email = "wrong email format";
+    }
   }
 
-  if (!values.email) {
-    errors.email = "required";
-  }
-
-  if (values.email && !validateEmail(values.email)) {
-    errors.email = "wrong email format";
-  }
-
-  if (!values.interests || values.interests.length === 0) {
-    errors.interests = "select at least 1 element";
+  if (this.currentStep === 1) {
+    console.log("called");
+    if (!values.interests || values.interests.length === 0) {
+      errors.interests = "select at least 1 element";
+    }
   }
 
   return errors;
 };
 
 function onInit() {
-  // if (this.hasValidationError) {
-  //   submitButton.setAttribute("disabled", "true");
-  // }
+  if (this.hasValidationError) {
+    submitButton.setAttribute("disabled", "true");
+  }
 }
 
 const myForm = new Form({
@@ -204,31 +219,29 @@ const myForm = new Form({
 });
 
 myForm.onChange(function () {
-  // if (this.hasValidationError) {
-  //   submitButton.setAttribute("disabled", "true");
-  // } else {
-  //   submitButton.removeAttribute("disabled");
-  // }
+  if (this.hasValidationError) {
+    submitButton.setAttribute("disabled", "true");
+  } else {
+    submitButton.removeAttribute("disabled");
+  }
 });
-
-let currentIndex = 0;
 
 const steps = ["personal-information", "topics", "resume"];
 
-function displayCurrentStep() {
+function displayCurrentStep(currentIndex) {
   steps.forEach((selector, index) => {
     const displayProperty = currentIndex === index ? "block" : "none";
     document.getElementById(selector).style.display = displayProperty;
   });
 }
 
-displayCurrentStep();
+displayCurrentStep(myForm.currentStep);
 
 submitButton.addEventListener("click", () => {
-  if (currentIndex < steps.length - 1) {
-    currentIndex++;
-    displayCurrentStep();
-  } else {
+  if (steps[myForm.currentStep] === "resume") {
     myForm.handleSubmit();
+  } else {
+    myForm.nextStep();
+    displayCurrentStep(myForm.currentStep);
   }
 });
