@@ -13,6 +13,11 @@
   box-sizing: border-box;
 }
 
+ul,
+li {
+  margin: 0;
+}
+
 body {
   font-family: "Inter", sans-serif;
   color: var(--white);
@@ -165,4 +170,24 @@ body {
   .step-title {
     margin-bottom: 40px;
   }
+}
+
+.sumary-title {
+  font-size: 18px;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.resume-label {
+  color: var(--light-grey);
+  font-size: 14px;
+}
+
+.resume-value {
+  font-size: 14px;
+}
+
+.resume-list {
+  margin-top: 16px;
+  margin-bottom: 24px;
 }

@@ -7,7 +7,14 @@ const validateEmail = (email) => {
 };
 
 class Form {
-  constructor({ initialValues = {}, fields, onSubmit, validate, onInit }) {
+  constructor({
+    initialValues = {},
+    fields,
+    onSubmit,
+    validate,
+    onInit,
+    onStepChange,
+  }) {
     this.values = { ...initialValues };
     this.onSubmit = onSubmit;
     this.hasValidationError = true;
@@ -19,6 +26,7 @@ class Form {
     this.fields = fields;
     this.onInit = onInit;
     this.currentStep = 0;
+    this.onStepChange = onStepChange;
 
     this.#_init();
   }
@@ -58,6 +66,7 @@ class Form {
     this.#_handleErrors();
     this.#_setHasValidationError();
     this.onChangeHandler && this.onChangeHandler();
+    this.onStepChange && this.onStepChange();
   }
 
   #_handleBlur(fieldName) {
@@ -171,14 +180,12 @@ const fields = [
   },
 ];
 
-const onSubmit = (values) => {
-  console.log("values", values);
+const onSubmit = () => {
+  alert("✅ Success");
 };
 
 const validate = function (values) {
   const errors = {};
-
-  console.log("currentStep", this.currentStep);
 
   if (this.currentStep === 0) {
     if (!values.name) {
@@ -195,7 +202,6 @@ const validate = function (values) {
   }
 
   if (this.currentStep === 1) {
-    console.log("called");
     if (!values.interests || values.interests.length === 0) {
       errors.interests = "select at least 1 element";
     }
@@ -210,12 +216,34 @@ function onInit() {
   }
 }
 
+function setResume(values) {
+  const emailElement = document.getElementById("resume-email");
+  const nameElement = document.getElementById("resume-name");
+  const interestsList = document.getElementById("interests-list");
+  submitButton.innerText = "Confirm";
+  emailElement.innerText = values.email;
+  nameElement.innerText = values.name;
+  values.interests.forEach((interest) => {
+    const listItemElement = document.createElement("li");
+    listItemElement.classList.add("resume-value");
+    listItemElement.innerHTML = interest;
+    interestsList.appendChild(listItemElement);
+  });
+}
+
+function onStepChange() {
+  if (this.currentStep === 2) {
+    setResume(this.values);
+  }
+}
+
 const myForm = new Form({
   initialValues,
   fields,
   onSubmit,
   validate,
   onInit,
+  onStepChange,
 });
 
 myForm.onChange(function () {
