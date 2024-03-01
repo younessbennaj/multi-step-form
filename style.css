@@ -16,29 +16,43 @@
 body {
   font-family: "Inter", sans-serif;
   color: var(--white);
-  padding: 8px;
   margin: 0;
+  padding: 0;
   background-color: var(--dark);
+  background-image: url("./images/blur-radial.svg"),
+    url("./images/blur-radial.svg");
+  background-repeat: no-repeat;
+  background-position: top -350px left -150px, bottom -350px right -250px;
+  background-size: 700px 700px;
+  min-height: 100vh;
+  padding: 96px 16px 0px 16px;
+}
+
+@media screen and (min-width: 768px) {
+  body {
+    padding: 0;
+    padding-top: 182px;
+  }
 }
 
 .container {
-  margin-top: 96px;
   background-color: var(--dark-grey);
   padding: 24px;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid var(--medium-grey);
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media screen and (min-width: 768px) {
+  .container {
+    width: 456px;
+    padding: 40px;
+  }
 }
 
 .input-field {
-  padding: 16px;
-  border-radius: 8px;
-  background-color: var(--dark-grey);
-  border: 2px solid var(--medium-grey);
-  box-sizing: content-box;
-  color: var(--light-grey);
-}
-
-.input-field {
+  font-size: 12px;
   padding: 16px;
   border-radius: 12px;
   background-color: var(--dark-grey);
@@ -88,6 +102,7 @@ body {
 }
 
 .submit-button {
+  margin-top: 12px;
   height: 42px;
   padding: 0px 40px;
   border-radius: 21px;
@@ -144,4 +159,10 @@ body {
   font-size: 18px;
   margin-bottom: 32px;
   font-weight: 500;
+}
+
+@media screen and (min-width: 768px) {
+  .step-title {
+    margin-bottom: 40px;
+  }
 }
