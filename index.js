@@ -232,6 +232,18 @@ function setResume(values) {
 }
 
 function onStepChange() {
+  const stepElement = document.getElementById("step");
+  const stepDots = document.querySelectorAll(".dot");
+  stepElement.innerText = this.currentStep + 1;
+
+  stepDots.forEach((el, index) => {
+    if (index === this.currentStep) {
+      el.classList.add("active");
+    } else {
+      el.classList.remove("active");
+    }
+  });
+
   if (this.currentStep === 2) {
     setResume(this.values);
   }
